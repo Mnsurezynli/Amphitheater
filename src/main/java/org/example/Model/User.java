@@ -2,6 +2,8 @@ package org.example.Model;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.List;
+
 @Table(name = "user")
 @Entity
 public class User {
@@ -19,6 +21,8 @@ public class User {
     private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Reserve> reserveList;
 
 
     public Long getId() {
@@ -67,5 +71,13 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public List<Reserve> getReserveList() {
+        return reserveList;
+    }
+
+    public void setReserveList(List<Reserve> reserveList) {
+        this.reserveList = reserveList;
     }
 }

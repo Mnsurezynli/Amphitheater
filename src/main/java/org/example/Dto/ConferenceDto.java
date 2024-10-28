@@ -15,6 +15,8 @@ public class ConferenceDto {
 
     private String organization;
 
+    private String nameResponsible;
+
     public Long getId() {
         return id;
     }
@@ -45,5 +47,13 @@ public class ConferenceDto {
 
     public void setOrganization(String organization) {
         this.organization = organization;
+    }
+
+    public String getNameResponsible() {
+        return nameResponsible;
+    }
+
+    public void setNameResponsible(String nameResponsible) {
+        this.nameResponsible = nameResponsible;
     }
 }
