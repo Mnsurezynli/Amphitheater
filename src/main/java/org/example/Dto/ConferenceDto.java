@@ -4,6 +4,7 @@ import org.example.Model.DayOfTime;
 import org.example.Model.Time;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 public class ConferenceDto {
 
@@ -16,6 +17,8 @@ public class ConferenceDto {
     private String organization;
 
     private String nameResponsible;
+
+    private LocalDate date;
 
     public Long getId() {
         return id;
@@ -55,5 +58,13 @@ public class ConferenceDto {
 
     public void setNameResponsible(String nameResponsible) {
         this.nameResponsible = nameResponsible;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 }

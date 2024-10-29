@@ -1,5 +1,6 @@
 package org.example.Service;
 
+import org.example.Dto.ConferenceDto;
 import org.example.Model.Conference;
 import org.example.Model.Reserve;
 
@@ -11,6 +12,8 @@ public interface IAdminService {
     void deleteConference(Long id);
 
     Reserve ConfirmOrRejectUser(Long reserveId, String a);
+
+    ConferenceDto createConference(ConferenceDto conferenceDto);
 
     List<Conference> viewAllConference();
 

@@ -1,5 +1,7 @@
 package org.example.Service.Impl;
 
+import org.example.Dto.ConferenceDto;
+import org.example.Exception.ResourceAlreadyExsits;
 import org.example.Exception.ResourceNotFound;
 import org.example.Model.Conference;
 import org.example.Model.Reserve;
@@ -40,6 +42,19 @@ public class AdminServiceImpl implements IAdminService {
             throw new ResourceNotFound("this user not found");
         } else {
             userRepository.deleteById(id);
+        }
+    }
+
+    @Transactional
+    public ConferenceDto createConference(ConferenceDto conferenceDto) {
+        Optional<Conference> conference = conferenceRepository.findById(conferenceDto.getId());
+        if (conference.isPresent()) {
+            throw new ResourceAlreadyExsits("this conference already exsits");
+        } else {
+            Conference conference1 = ConvertToEntity(conferenceDto);
+            conference1 = conferenceRepository.saveAndFlush(conference1);
+            ConferenceDto conferenceDto1 = ConvertToDto(conference1);
+            return conferenceDto1;
         }
     }
 
@@ -85,6 +100,33 @@ public class AdminServiceImpl implements IAdminService {
         } else {
             reserves.setStatus(Status.valueOf("REJECT"));
         }
-        return  reserveRepository.saveAndFlush(reserves);
+        return reserveRepository.saveAndFlush(reserves);
+    }
+
+    public ConferenceDto ConvertToDto(Conference conference) {
+        if (conference == null) {
+            return null;
+        }
+        ConferenceDto conferenceDto = new ConferenceDto();
+        conferenceDto.setId(conference.getId());
+        conferenceDto.setTime(conference.getTime());
+        conferenceDto.setDayOfTime(conference.getDayOfTime());
+        conferenceDto.setOrganization(conference.getOrganization());
+        conferenceDto.setNameResponsible(conference.getNameResponsible());
+        return conferenceDto;
+    }
+
+    public Conference ConvertToEntity(ConferenceDto conferenceDto) {
+        if (conferenceDto == null) {
+            return null;
+        }
+        Conference conference = new Conference();
+        conference.setId(conferenceDto.getId());
+        conference.setTime(conferenceDto.getTime());
+        conference.setOrganization(conferenceDto.getOrganization());
+        conference.setDayOfTime(conferenceDto.getDayOfTime());
+        conference.setNameResponsible(conferenceDto.getNameResponsible());
+        conference.setDate(conferenceDto.getDate());
+        return conference;
     }
 }
