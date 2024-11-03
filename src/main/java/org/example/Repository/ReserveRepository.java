@@ -1,11 +1,15 @@
 package org.example.Repository;
 
 import org.example.Model.Reserve;
+import org.example.Model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface ReserveRepository extends JpaRepository<Reserve,Long> {
+import java.util.Optional;
 
-    void deleteById(Long reserveId);
+@Repository
+public interface ReserveRepository extends JpaRepository<Reserve, Long> {
+    Reserve saveAndFlush(Reserve reserve);
+    void deleteById(Long id);
+    Optional<Reserve> findById(Long id);
 }

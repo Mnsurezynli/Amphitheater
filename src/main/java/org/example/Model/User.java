@@ -21,6 +21,9 @@ public class User {
     private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private Status status;
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Reserve> reserveList;
 
@@ -79,5 +82,13 @@ public class User {
 
     public void setReserveList(List<Reserve> reserveList) {
         this.reserveList = reserveList;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

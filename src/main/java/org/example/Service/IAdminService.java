@@ -11,13 +11,17 @@ public interface IAdminService {
 
     void deleteConference(Long id);
 
-    Reserve ConfirmOrRejectUser(Long reserveId, String a);
+    void confirmUser(Long userId);
+
+    void rejectUser(Long userId);
 
     ConferenceDto createConference(ConferenceDto conferenceDto);
 
     List<Conference> viewAllConference();
 
-    List<Reserve> viewHistoryOfConference();
+    List<Conference> viewHistoryOfConference();
 
-    Reserve ConfirmOrRejectConference(Long reserveId, boolean confirmed);
+    void confirmConference(Long conferenceId);
+
+    void rejectConference(Long conferenceId);
 }

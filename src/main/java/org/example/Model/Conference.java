@@ -3,6 +3,7 @@ package org.example.Model;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "conference")
 @Entity
@@ -10,6 +11,8 @@ public class Conference {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(name = "title")
+    private String title;
     @Column(name = "dayOfTime")
     @Enumerated(EnumType.STRING)
     private DayOfTime dayOfTime;
@@ -22,6 +25,11 @@ public class Conference {
     private String organization;
     @Column(name = "nameResponsible")
     private String nameResponsible;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    @OneToMany(mappedBy = "conference", cascade = CascadeType.ALL)
+    private List<Reserve> reserveList;
 
     public Long getId() {
         return id;
@@ -69,5 +77,29 @@ public class Conference {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public List<Reserve> getReserveList() {
+        return reserveList;
+    }
+
+    public void setReserveList(List<Reserve> reserveList) {
+        this.reserveList = reserveList;
     }
 }

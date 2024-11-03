@@ -1,6 +1,7 @@
 package org.example.Dto;
 
 import org.example.Model.Role;
+import org.example.Model.Status;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -12,6 +13,7 @@ public class UserDto {
     private String email;
     private String phoneNumber;
     private Role role;
+    private Status status;
 
     public Long getId() {
         return id;
@@ -59,5 +61,13 @@ public class UserDto {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

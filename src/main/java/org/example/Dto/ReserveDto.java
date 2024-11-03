@@ -2,13 +2,18 @@ package org.example.Dto;
 
 import org.example.Model.Conference;
 import org.example.Model.Status;
+import org.example.Model.Time;
 import org.example.Model.User;
+
+import java.time.LocalDate;
 
 public class ReserveDto {
     private Long id;
     private Status status;
-    private Conference conference;
-    private User user;
+    private Long conferenceId;
+    private Long userId;
+    private Time time;
+    private LocalDate date;
 
     public Long getId() {
         return id;
@@ -26,19 +31,35 @@ public class ReserveDto {
         this.status = status;
     }
 
-    public Conference getConference() {
-        return conference;
+    public Long getConferenceId() {
+        return conferenceId;
     }
 
-    public void setConference(Conference conference) {
-        this.conference = conference;
+    public void setConferenceId(Long conferenceId) {
+        this.conferenceId = conferenceId;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Time getTime() {
+        return time;
+    }
+
+    public void setTime(Time time) {
+        this.time = time;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 }

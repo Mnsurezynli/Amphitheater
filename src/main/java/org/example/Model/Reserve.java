@@ -1,6 +1,7 @@
 package org.example.Model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Table(name = "reserve")
 @Entity
@@ -16,6 +17,11 @@ public class Reserve {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @Column(name = "time")
+    @Enumerated(EnumType.STRING)
+    private Time time;
+    @Column(name = "date")
+    private LocalDate date;
 
     public Long getId() {
         return id;
@@ -49,5 +55,19 @@ public class Reserve {
         this.user = user;
     }
 
+    public Time getTime() {
+        return time;
+    }
 
+    public void setTime(Time time) {
+        this.time = time;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 }

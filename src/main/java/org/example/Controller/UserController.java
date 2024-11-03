@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -39,10 +40,10 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{reserveId}")
-    public ResponseEntity<String> cancelTheReserve(@PathVariable Long reserveId) {
-        iUserService.cancelTheReserve(reserveId);
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    @DeleteMapping("/id/{id}")
+    public ResponseEntity<String> cancelTheReserve(@PathVariable Long id) {
+        iUserService.cancelTheReserve(id);
+        return new ResponseEntity<>("the reserve deleted successfully", HttpStatus.OK);
     }
 
     @PostMapping("/reserve")
@@ -51,9 +52,10 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/ViewTheStatus")
-    public ResponseEntity<Void> ViewTheStatusForReserve(@PathVariable Long reserveId) {
-        iUserService.ViewTheStatusForReserve(reserveId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/ViewTheStatus/{reserveId}")
+    public ResponseEntity<ReserveDto> ViewTheStatusForReserve(@PathVariable Long id) {
+        ReserveDto reserveDto = iUserService.ViewTheStatusForReserve(id);
+        return new ResponseEntity<>(reserveDto, HttpStatus.OK);
     }
+
 }

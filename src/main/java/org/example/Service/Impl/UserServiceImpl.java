@@ -39,6 +39,7 @@ public class UserServiceImpl implements IUserService {
             throw new IllegalArgumentException("this user already exists");
         } else {
             User user1 = ConvertToEntity(userDto);
+            user1.setStatus(Status.valueOf("PENDING"));
             user1 = userRepository.saveAndFlush(user1);
             UserDto userDto1 = ConvertToDto(user1);
             return userDto1;
@@ -64,21 +65,36 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Transactional
-    public void cancelTheReserve(Long reserveId) {
-        Reserve reserve = reserveRepository.findById(reserveId).orElseThrow(() -> new ResourceNotFound("this reserveId not found"));
-        reserveRepository.deleteById(reserveId);
+    public ReserveDto createReserve(ReserveDto reserveDto) {
+        Reserve reserve = ConvertToEntityReserveDto(reserveDto);
+        reserve = reserveRepository.saveAndFlush(reserve);
+        ReserveDto reserveDto1 = ConvertToDtoReserve(reserve);
+        return reserveDto1;
+
+    }
+
+    @Transactional
+    public void cancelTheReserve(Long id) {
+        Optional<Reserve> reserve = reserveRepository.findById(id);
+        if (!reserve.isPresent()) {
+            throw new ResourceNotFound("this reserve not found");
+        } else {
+            reserveRepository.deleteById(id);
+        }
     }
 
     @Transactional
     public Reserve reserveTheTime(ReserveDto reserveDto) {
-       Reserve reserve =ConvertToEntityReserveDto(reserveDto);
+        Reserve reserve = ConvertToEntityReserveDto(reserveDto);
         reserve.setStatus(Status.PENDING);
         return reserveRepository.saveAndFlush(reserve);
     }
 
-    public Optional<Reserve> ViewTheStatusForReserve(Long reserveId) {
-        Reserve reserve = reserveRepository.findById(reserveId).orElseThrow(() -> new ResourceNotFound("this reserveId not found"));
-        return reserveRepository.findById(reserveId);
+    @Override
+    public ReserveDto ViewTheStatusForReserve(Long id) {
+        Reserve reserve = reserveRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFound("this reserveId not found"));
+        return ConvertToDtoReserve(reserve);
     }
 
 
@@ -107,9 +123,9 @@ public class UserServiceImpl implements IUserService {
     public ReserveDto ConvertToDtoReserve(Reserve reserve) {
         ReserveDto reserveDto = new ReserveDto();
         reserveDto.setId(reserve.getId());
-        reserveDto.setUser(reserve.getUser());
+        reserveDto.setUserId(reserve.getId());
         reserveDto.setStatus(reserve.getStatus());
-        reserveDto.setConference(reserve.getConference());
+       reserveDto.setConferenceId(reserve.getId());
         return reserveDto;
     }
 

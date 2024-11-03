@@ -47,15 +47,11 @@ public class AdminServiceImpl implements IAdminService {
 
     @Transactional
     public ConferenceDto createConference(ConferenceDto conferenceDto) {
-        Optional<Conference> conference = conferenceRepository.findById(conferenceDto.getId());
-        if (conference.isPresent()) {
-            throw new ResourceAlreadyExsits("this conference already exsits");
-        } else {
-            Conference conference1 = ConvertToEntity(conferenceDto);
-            conference1 = conferenceRepository.saveAndFlush(conference1);
-            ConferenceDto conferenceDto1 = ConvertToDto(conference1);
-            return conferenceDto1;
-        }
+        Conference conference1 = ConvertToEntity(conferenceDto);
+        conference1 = conferenceRepository.saveAndFlush(conference1);
+        ConferenceDto conferenceDto1 = ConvertToDto(conference1);
+        return conferenceDto1;
+
     }
 
     @Transactional
@@ -68,44 +64,62 @@ public class AdminServiceImpl implements IAdminService {
         }
     }
 
-    public Reserve ConfirmOrRejectUser(Long reserveId, String a) {
-        Reserve reserve = reserveRepository.findById(reserveId).get();
-        if (a.equals("CONFIRM")) {
-            reserve.setStatus(Status.CONFIRM);
-        } else if (a.equals("REJECT")) {
-            reserve.setStatus(Status.REJECT);
+    @Transactional
+    public void confirmUser(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            User user1 = user.get();
+            user1.setStatus(Status.valueOf("CONFIRM"));
         } else {
-            throw new IllegalArgumentException("a is invalid");
+            throw new ResourceNotFound("this user not found");
         }
-        return reserveRepository.saveAndFlush(reserve);
     }
 
+    @Transactional
+    public void rejectUser(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            User user1 = user.get();
+            user1.setStatus(Status.valueOf("REJECT"));
+        } else {
+            throw new ResourceNotFound("this user not found");
+        }
+    }
 
     public List<Conference> viewAllConference() {
         List<Conference> conferences = conferenceRepository.findAll();
         return conferences;
     }
 
-    public List<Reserve> viewHistoryOfConference() {
-        List<Reserve> reserves = reserveRepository.findAll();
-        reserves.stream().filter(reserve -> reserve.getStatus().equals("CONFIRM")).collect(Collectors.toList());
-        return reserves;
+    public List<Conference> viewHistoryOfConference() {
+        List<Conference> conferences = conferenceRepository.findAll();
+        conferences.stream().filter(conference -> conference.getStatus().equals("CONFIRM")).collect(Collectors.toList());
+        return conferences;
     }
 
-    public Reserve ConfirmOrRejectConference(Long reserveId, boolean confirm) {
-        Reserve reserves = reserveRepository.findById(reserveId)
-                .orElseThrow(() -> new ResourceNotFound("this conference is not reserved"));
-        if (confirm) {
-            reserves.setStatus(Status.valueOf("CONFIRM"));
+    public void confirmConference(Long conferenceId) {
+        Optional<Conference> conference = conferenceRepository.findById(conferenceId);
+        if (conference.isPresent()) {
+            Conference conference1 = conference.get();
+            conference1.setStatus(Status.valueOf("CONFIRM"));
         } else {
-            reserves.setStatus(Status.valueOf("REJECT"));
+            throw new ResourceNotFound("this conference not found");
         }
-        return reserveRepository.saveAndFlush(reserves);
+    }
+
+    public void rejectConference(Long conferenceId) {
+        Optional<Conference> conference = conferenceRepository.findById(conferenceId);
+        if(conference.isPresent()){
+            Conference conference1 =conference.get();
+            conference1.setStatus(Status.valueOf("REJECT"));
+        }else {
+            throw new ResourceNotFound("this conference not found");
+        }
     }
 
     public ConferenceDto ConvertToDto(Conference conference) {
-        if (conference == null) {
-            return null;
+        if (conference.getId() == null) {
+            throw new IllegalArgumentException("id not be null");
         }
         ConferenceDto conferenceDto = new ConferenceDto();
         conferenceDto.setId(conference.getId());
@@ -117,11 +131,7 @@ public class AdminServiceImpl implements IAdminService {
     }
 
     public Conference ConvertToEntity(ConferenceDto conferenceDto) {
-        if (conferenceDto == null) {
-            return null;
-        }
         Conference conference = new Conference();
-        conference.setId(conferenceDto.getId());
         conference.setTime(conferenceDto.getTime());
         conference.setOrganization(conferenceDto.getOrganization());
         conference.setDayOfTime(conferenceDto.getDayOfTime());

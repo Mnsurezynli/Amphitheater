@@ -5,7 +5,6 @@ import org.example.Dto.UserDto;
 import org.example.Model.Reserve;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IUserService {
 
@@ -15,9 +14,11 @@ public interface IUserService {
 
     List<Reserve> viewEmptyTime();
 
-    void cancelTheReserve(Long reserveId);
+    void cancelTheReserve(Long id);
+
+    ReserveDto createReserve(ReserveDto reserveDto);
 
     Reserve reserveTheTime(ReserveDto reserveDto);
 
-    Optional<Reserve> ViewTheStatusForReserve(Long reserveId);
+    ReserveDto ViewTheStatusForReserve(Long id);
 }
