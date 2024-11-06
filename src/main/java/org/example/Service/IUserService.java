@@ -3,6 +3,7 @@ package org.example.Service;
 import org.example.Dto.ReserveDto;
 import org.example.Dto.UserDto;
 import org.example.Model.Reserve;
+import org.example.Model.Time;
 
 import java.util.List;
 
@@ -10,15 +11,13 @@ public interface IUserService {
 
     UserDto register(UserDto userDto);
 
-    void Login(UserDto userDto);
+    String Login(UserDto userDto);
 
-    List<Reserve> viewEmptyTime();
+    List<Time> viewEmptyTime(Long conferenceId);
 
     void cancelTheReserve(Long id);
 
-    ReserveDto createReserve(ReserveDto reserveDto);
-
     Reserve reserveTheTime(ReserveDto reserveDto);
 
-    ReserveDto ViewTheStatusForReserve(Long id);
+    String getConferenceReserveStatus(Long reserveId);
 }

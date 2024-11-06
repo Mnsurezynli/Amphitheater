@@ -3,6 +3,7 @@ package org.example.Controller;
 import org.example.Dto.ReserveDto;
 import org.example.Dto.UserDto;
 import org.example.Model.Reserve;
+import org.example.Model.Time;
 import org.example.Service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,15 +30,15 @@ public class UserController {
     }
 
     @PostMapping("/Login")
-    public ResponseEntity<Void> Login(@RequestBody UserDto userDto) {
+    public ResponseEntity<String> Login(@RequestBody UserDto userDto) {
         iUserService.Login(userDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("Login was successfully",HttpStatus.OK);
     }
 
-    @GetMapping("/viewEmptyTime")
-    public ResponseEntity<List<Reserve>> viewEmptyTime() {
-        iUserService.viewEmptyTime();
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/viewEmptyTime/{conferenceId}")
+    public ResponseEntity<List<Time>> viewEmptyTime(@PathVariable Long conferenceId) {
+        List<Time> emptyTime = iUserService.viewEmptyTime(conferenceId);
+        return new ResponseEntity<>(emptyTime, HttpStatus.OK);
     }
 
     @DeleteMapping("/id/{id}")
@@ -52,9 +53,9 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/ViewTheStatus/{reserveId}")
-    public ResponseEntity<ReserveDto> ViewTheStatusForReserve(@PathVariable Long id) {
-        ReserveDto reserveDto = iUserService.ViewTheStatusForReserve(id);
+    @GetMapping("/ViewTheStatus/reserveId/{reserveId}")
+    public ResponseEntity<String> getConferenceReserveStatus(@PathVariable Long reserveId ) {
+        String reserveDto = iUserService.getConferenceReserveStatus(reserveId);
         return new ResponseEntity<>(reserveDto, HttpStatus.OK);
     }
 

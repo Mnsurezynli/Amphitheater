@@ -3,9 +3,7 @@ package org.example.Service.Impl;
 import org.example.Dto.ReserveDto;
 import org.example.Dto.UserDto;
 import org.example.Exception.ResourceNotFound;
-import org.example.Model.Reserve;
-import org.example.Model.Status;
-import org.example.Model.User;
+import org.example.Model.*;
 import org.example.Repository.ConferenceRepository;
 import org.example.Repository.ReserveRepository;
 import org.example.Repository.UserRepository;
@@ -14,9 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -46,32 +45,30 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
-    public void Login(UserDto userDto) {
+    public String Login(UserDto userDto) {
         Optional<User> user = userRepository.findByUserNameAndPassword(userDto.getUserName(), userDto.getPassword());
         if (!user.isPresent()) {
             throw new ResourceNotFound("this user not found");
         } else {
-            System.out.println("Login was successfully");
+            return "Login was successfully";
         }
-    }
-
-    public List<Reserve> viewEmptyTime() {
-        List<Reserve> reserves = reserveRepository.findAll();
-        List<Reserve> reserveList = reserves.stream().filter(reserve -> reserve.getStatus().equals("CONFIRM")).collect(Collectors.toList());
-
-        List<Reserve> timeSlot = reserveRepository.findAll();
-        timeSlot.removeAll(reserveList);
-        return timeSlot;
-    }
-
-    @Transactional
-    public ReserveDto createReserve(ReserveDto reserveDto) {
-        Reserve reserve = ConvertToEntityReserveDto(reserveDto);
-        reserve = reserveRepository.saveAndFlush(reserve);
-        ReserveDto reserveDto1 = ConvertToDtoReserve(reserve);
-        return reserveDto1;
 
     }
+
+    public List<Time> viewEmptyTime(Long conferenceId) {
+        Optional<Conference> conference = conferenceRepository.findById(conferenceId);
+        List<Time> emptyTime;
+        if (!conference.isPresent()) {
+            throw new ResourceNotFound("this conference not found");
+        } else {
+            emptyTime = new ArrayList<>(Arrays.asList(Time.MORNING, Time.AFTERNOON));
+            for (Reserve reserve : conference.get().getReserveList()) {
+                emptyTime.remove(reserve.getTime());
+            }
+        }
+        return emptyTime;
+    }
+
 
     @Transactional
     public void cancelTheReserve(Long id) {
@@ -85,56 +82,76 @@ public class UserServiceImpl implements IUserService {
 
     @Transactional
     public Reserve reserveTheTime(ReserveDto reserveDto) {
+        if (reserveDto == null || reserveDto.getConferenceId() == null) {
+            throw new IllegalArgumentException("conference id not be null");
+        }
+        Conference conference = conferenceRepository.findById(reserveDto.getConferenceId())
+                .orElseThrow(() -> new RuntimeException("Conference not found"));
         Reserve reserve = ConvertToEntityReserveDto(reserveDto);
-        reserve.setStatus(Status.PENDING);
+        reserve.setConference(conference);
         return reserveRepository.saveAndFlush(reserve);
     }
 
-    @Override
-    public ReserveDto ViewTheStatusForReserve(Long id) {
-        Reserve reserve = reserveRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFound("this reserveId not found"));
-        return ConvertToDtoReserve(reserve);
+    public String getConferenceReserveStatus(Long reserveId) {
+        Reserve reserve = reserveRepository.findById(reserveId)
+                .orElseThrow(() -> new RuntimeException("Reserve request not found"));
+        return String.valueOf(reserve.getStatus());
     }
 
 
     public UserDto ConvertToDto(User user) {
         UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUserName(user.getUserName());
-        userDto.setPassword(user.getPassword());
-        userDto.setEmail(user.getEmail());
-        userDto.setPhoneNumber(user.getPhoneNumber());
-        userDto.setRole(user.getRole());
+        if (user != null) {
+            userDto.setId(user.getId());
+            userDto.setUserName(user.getUserName());
+            userDto.setPassword(user.getPassword());
+            userDto.setEmail(user.getEmail());
+            userDto.setPhoneNumber(user.getPhoneNumber());
+            userDto.setRole(user.getRole());
+        }
         return userDto;
     }
 
     public User ConvertToEntity(UserDto userDto) {
         User user = new User();
-        user.setId(userDto.getId());
-        user.setUserName(userDto.getUserName());
-        user.setPassword(userDto.getPassword());
-        user.setEmail(userDto.getEmail());
-        user.setPhoneNumber(userDto.getPhoneNumber());
-        user.setRole(userDto.getRole());
+        if (userDto != null) {
+            user.setId(userDto.getId());
+            user.setUserName(userDto.getUserName());
+            user.setPassword(userDto.getPassword());
+            user.setEmail(userDto.getEmail());
+            user.setPhoneNumber(userDto.getPhoneNumber());
+            user.setRole(userDto.getRole());
+        }
         return user;
     }
 
     public ReserveDto ConvertToDtoReserve(Reserve reserve) {
         ReserveDto reserveDto = new ReserveDto();
-        reserveDto.setId(reserve.getId());
-        reserveDto.setUserId(reserve.getId());
-        reserveDto.setStatus(reserve.getStatus());
-       reserveDto.setConferenceId(reserve.getId());
+        if (reserve != null) {
+            reserveDto.setId(reserve.getId());
+            reserveDto.setUserId(reserve.getUser() != null ? reserve.getUser().getId() : null);
+            reserveDto.setStatus(reserve.getStatus());
+            reserveDto.setConferenceId(reserve.getConference() != null ? reserve.getConference().getId() : null);
+        }
         return reserveDto;
     }
 
     public Reserve ConvertToEntityReserveDto(ReserveDto reserveDto) {
         Reserve reserve = new Reserve();
-        reserve.setId(reserveDto.getId());
-        reserve.setUser(reserveDto.getUser());
-        reserve.setStatus(reserveDto.getStatus());
-        reserve.setConference(reserveDto.getConference());
+        if (reserveDto != null) {
+            reserve.setId(reserveDto.getId());
+
+            if (reserveDto.getUserId() != null) {
+                User user = new User();
+                user.setId(reserveDto.getUserId());
+                reserve.setUser(user);
+            }
+            reserve.setStatus(reserveDto.getStatus());
+            reserve.setDate(reserveDto.getDate());
+            reserve.setTime(reserveDto.getTime());
+        }
         return reserve;
     }
+
+
 }

@@ -3,12 +3,14 @@ package org.example.Controller;
 import org.example.Dto.ConferenceDto;
 import org.example.Model.Conference;
 import org.example.Model.Reserve;
+import org.example.Model.User;
 import org.example.Service.IAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.jws.soap.SOAPBinding;
 import java.util.List;
 
 @RestController
@@ -39,11 +41,18 @@ public class AdminController {
         return new ResponseEntity<>("the conference deleted successfully", HttpStatus.OK);
     }
 
-    @PostMapping("/reserve/{reserveId}/confirm-reject")
-    public ResponseEntity<Reserve> ConfirmOrRejectUser(@PathVariable Long reserveId, @RequestParam String a) {
-        iAdminService.ConfirmOrRejectUser(reserveId, a);
+    @PostMapping("/user/{userId}/confirm")
+    public ResponseEntity<User> confirmUser(@PathVariable Long userId) {
+        iAdminService.confirmUser(userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/user/{userId}/reject")
+    public ResponseEntity<User> rejectUser(@PathVariable Long userId) {
+        iAdminService.confirmUser(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @GetMapping("/viewAllConference")
     public ResponseEntity<List<Conference>> viewAllConference() {
@@ -52,14 +61,19 @@ public class AdminController {
     }
 
     @GetMapping("/viewHistoryOfConference")
-    public ResponseEntity<List<Reserve>> viewHistoryOfConference() {
-        List<Reserve> reserves = iAdminService.viewHistoryOfConference();
-        return new ResponseEntity<>(reserves, HttpStatus.OK);
+    public ResponseEntity<List<Conference>> viewHistoryOfConference() {
+        List<Conference> conferences = iAdminService.viewHistoryOfConference();
+        return new ResponseEntity<>(conferences, HttpStatus.OK);
     }
 
-    @PostMapping("/conference/{reserveId}/confirm-reject")
-    public ResponseEntity<Reserve> ConfirmOrRejectConference(@PathVariable Long reserveId, @RequestParam boolean confirm) {
-        iAdminService.ConfirmOrRejectConference(reserveId, confirm);
+    @PostMapping("/conference/{conferenceId}/confirm")
+    public ResponseEntity<Conference> confirmConference(@PathVariable Long conferenceId) {
+        iAdminService.confirmConference(conferenceId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @PostMapping("/conference/{conferenceId}/reject")
+    public ResponseEntity<Conference> rejectConference(@PathVariable Long conferenceId) {
+        iAdminService.confirmConference(conferenceId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

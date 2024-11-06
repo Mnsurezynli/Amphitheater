@@ -1,10 +1,8 @@
 package org.example.Service.Impl;
 
 import org.example.Dto.ConferenceDto;
-import org.example.Exception.ResourceAlreadyExsits;
 import org.example.Exception.ResourceNotFound;
 import org.example.Model.Conference;
-import org.example.Model.Reserve;
 import org.example.Model.Status;
 import org.example.Model.User;
 import org.example.Repository.ConferenceRepository;
@@ -65,22 +63,24 @@ public class AdminServiceImpl implements IAdminService {
     }
 
     @Transactional
-    public void confirmUser(Long userId) {
+    public Optional<User> confirmUser(Long userId) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()) {
             User user1 = user.get();
             user1.setStatus(Status.valueOf("CONFIRM"));
+            return user;
         } else {
             throw new ResourceNotFound("this user not found");
         }
     }
 
     @Transactional
-    public void rejectUser(Long userId) {
+    public Optional<User> rejectUser(Long userId) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()) {
             User user1 = user.get();
             user1.setStatus(Status.valueOf("REJECT"));
+            return user;
         } else {
             throw new ResourceNotFound("this user not found");
         }
@@ -97,21 +97,25 @@ public class AdminServiceImpl implements IAdminService {
         return conferences;
     }
 
-    public void confirmConference(Long conferenceId) {
+    @Transactional
+    public Optional<Conference> confirmConference(Long conferenceId) {
         Optional<Conference> conference = conferenceRepository.findById(conferenceId);
         if (conference.isPresent()) {
             Conference conference1 = conference.get();
             conference1.setStatus(Status.valueOf("CONFIRM"));
+            return conference;
         } else {
             throw new ResourceNotFound("this conference not found");
         }
     }
 
-    public void rejectConference(Long conferenceId) {
+    @Transactional
+    public Optional<Conference> rejectConference(Long conferenceId) {
         Optional<Conference> conference = conferenceRepository.findById(conferenceId);
         if(conference.isPresent()){
             Conference conference1 =conference.get();
             conference1.setStatus(Status.valueOf("REJECT"));
+            return conference;
         }else {
             throw new ResourceNotFound("this conference not found");
         }
@@ -124,6 +128,9 @@ public class AdminServiceImpl implements IAdminService {
         ConferenceDto conferenceDto = new ConferenceDto();
         conferenceDto.setId(conference.getId());
         conferenceDto.setTime(conference.getTime());
+        conferenceDto.setStatus(conference.getStatus());
+        conferenceDto.setDate(conference.getDate());
+        conferenceDto.setTitle(conference.getTitle());
         conferenceDto.setDayOfTime(conference.getDayOfTime());
         conferenceDto.setOrganization(conference.getOrganization());
         conferenceDto.setNameResponsible(conference.getNameResponsible());
@@ -137,6 +144,9 @@ public class AdminServiceImpl implements IAdminService {
         conference.setDayOfTime(conferenceDto.getDayOfTime());
         conference.setNameResponsible(conferenceDto.getNameResponsible());
         conference.setDate(conferenceDto.getDate());
+        conference.setId(conferenceDto.getId());
+        conference.setStatus(conferenceDto.getStatus());
+        conference.setTitle(conferenceDto.getTitle());
         return conference;
     }
 }

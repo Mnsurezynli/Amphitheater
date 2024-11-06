@@ -2,18 +2,19 @@ package org.example.Service;
 
 import org.example.Dto.ConferenceDto;
 import org.example.Model.Conference;
-import org.example.Model.Reserve;
+import org.example.Model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IAdminService {
     void deleteUser(Long id);
 
     void deleteConference(Long id);
 
-    void confirmUser(Long userId);
+    Optional<User> confirmUser(Long userId);
 
-    void rejectUser(Long userId);
+    Optional<User> rejectUser(Long userId);
 
     ConferenceDto createConference(ConferenceDto conferenceDto);
 
@@ -21,7 +22,7 @@ public interface IAdminService {
 
     List<Conference> viewHistoryOfConference();
 
-    void confirmConference(Long conferenceId);
+    Optional<Conference> confirmConference(Long conferenceId);
 
-    void rejectConference(Long conferenceId);
+    Optional<Conference> rejectConference(Long conferenceId);
 }
